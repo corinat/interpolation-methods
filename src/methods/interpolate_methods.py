@@ -159,7 +159,7 @@ class GenerateRandomPointsAndInterpolate:
         points3d = gpd.read_file(points)
         x_coords, y_coords, z_coords, _, points3d[column] = self.generate_point_grid(points)
 
-        points = [(x, y) for x, y in zip(points3d["geometry"].x, points3d["geometry"].y)]
+        points = list(zip(points3d["geometry"].x, points3d["geometry"].y))
         values = points3d[column].values
 
         grid_x, grid_y = np.meshgrid(x_coords, y_coords)
@@ -220,11 +220,7 @@ class GenerateRandomPointsAndInterpolate:
             for index_y, y in np.ndenumerate(y_coords):
                 temp_z = method(x, y)
                 # filtering masked values
-                if temp_z == temp_z:
-                    z_coords[index_y, index_x] = temp_z
-                else:
-                    z_coords[index_y, index_x] = np.nan
-
+                z_coords[index_y, index_x] = temp_z if temp_z == temp_z else np.nan
         transform = self.generate_affine_transform(x_coords, y_coords, raster_resolution)
         array = self.create_dask_chunks(z_coords)
         self.write_rast(array, z_coords, transform, out_raster)
