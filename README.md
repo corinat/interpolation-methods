@@ -8,13 +8,14 @@ A valid GDAL/OGR installation is required, this can be achieved using your packa
 # conda install gdal -c conda-forge
 
 # create new virtualenv and install reqs
-mkvirtualenv --python=/usr/bin/python3.8 venv3.8
+mkvirtualenv --python=/usr/bin/python3.8 venv3.11
 pip install -r requirements-dev.txt
 pip install -r requirements.txt
 pip install -e .
 pre-commit install
-```
 
+Or use docker. The comands are listed in the makefile file
+```
 - Code is linted using [flake8](https://flake8.pycqa.org/en/latest/) with `--max-line-length=120`
 - Code formatting is validated using [Black](https://github.com/psf/black)
 - [pre-commit](https://pre-commit.com/) is used to run these checks locally before files are pushed to git
