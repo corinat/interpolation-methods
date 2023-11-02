@@ -1,8 +1,8 @@
 #!/bin/bash
 
-# run as: ./run_interpolation_methods.sh scipy $HOME/quarticle/data/multipolygons.shp $HOME/quarticle/data/random_points.gpkg linear $HOME/quarticle/data/linear_scipy.tif $HOME/quarticle/data/
+# run as: ./run_interpolation_methods.sh scipy /usr/src/app/data/multipolygons.shp /usr/src/app/data/random_points.gpkg linear /usr/src/app/linear_scipy.tif /usr/src/app/data/
 # or
-# ./run_interpolation_methods.sh mpl $HOME/quarticle/data/multipolygons.shp $HOME/quarticle/data/random_points.gpkg linear_tri_interpolator $HOME/quarticle/data/linear_mpl.tif $HOME/quarticle/data/
+# ./run_interpolation_methods.sh mpl /usr/src/app/data/multipolygons.shp /usr/src/app/data/random_points.gpkg linear_tri_interpolator /usr/src/app/data/linear_mpl.tif /usr/src/app/data/
 
 STARTTIME=$(date +%s)
 
@@ -39,7 +39,7 @@ echo ""
 echo "------Running interpolation script-------"
 echo ""
 
-python ${HOME}/quarticle/src/run_interpolation_methods.py -l $interp_library -p $polygon_path -t $points_path -m $interp_method -o $output_raster
+python /usr/src/app/src/run_interpolation_methods.py -l $interp_library -p $polygon_path -t $points_path -m $interp_method -o $output_raster
 
 ENDTIME=$(date +%s)
 echo "Duration to complete: $((($ENDTIME - $STARTTIME)/60))m and $(($ENDTIME - $STARTTIME))s"

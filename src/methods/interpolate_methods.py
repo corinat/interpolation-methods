@@ -6,7 +6,7 @@ import logging
 import dask.array as da
 import geopandas as gpd
 import numpy as np
-from dask_rasterio import write_raster
+import rasterio
 from matplotlib.tri import CubicTriInterpolator, LinearTriInterpolator, Triangulation
 from rasterio.transform import Affine
 from scipy.interpolate import griddata
@@ -14,7 +14,7 @@ from scipy.interpolate import griddata
 
 class GenerateRandomPointsAndInterpolate:
     @staticmethod
-    def generate_random_points(polygon, points, points_number=200000000, epsg=4326):
+    def generate_random_points(polygon, points, points_number=200, epsg=4326):
         """Generate random points in polygon bbox
 
         Args:
@@ -39,7 +39,12 @@ class GenerateRandomPointsAndInterpolate:
         spatial_join.to_file(points)
 
     def generate_point_grid(
-        self, points, column="randon_num", min_rand_points=100000, max_rand_points=200000, raster_resolution=2
+        self,
+        points,
+        column="randon_num",
+        min_rand_points=100000,
+        max_rand_points=200000,
+        raster_resolution=2,
     ):
         """Generate interpolation grid
 
@@ -60,16 +65,26 @@ class GenerateRandomPointsAndInterpolate:
 
         total_points_array = np.zeros([points3d.shape[0], 3])
         for index, point in points3d.iterrows():
-            pointArray = np.array([point.geometry.coords.xy[0][0], point.geometry.coords.xy[1][0], point[column]])
+            pointArray = np.array(
+                [
+                    point.geometry.coords.xy[0][0],
+                    point.geometry.coords.xy[1][0],
+                    point[column],
+                ]
+            )
             total_points_array[index] = pointArray
 
         logging.info("Generating point grid")
 
         x_coords = np.arange(
-            total_points_array[:, 0].min(), total_points_array[:, 0].max() + raster_resolution, raster_resolution
+            total_points_array[:, 0].min(),
+            total_points_array[:, 0].max() + raster_resolution,
+            raster_resolution,
         )
         y_coords = np.arange(
-            total_points_array[:, 1].min(), total_points_array[:, 1].max() + raster_resolution, raster_resolution
+            total_points_array[:, 1].min(),
+            total_points_array[:, 1].max() + raster_resolution,
+            raster_resolution,
         )
         z_coords = np.zeros([y_coords.shape[0], x_coords.shape[0]])
 
@@ -128,11 +143,8 @@ class GenerateRandomPointsAndInterpolate:
         }
 
         logging.info(f"Writing raster: {out_raster}")
-        write_raster(
-            out_raster,
-            array,
-            **profile,
-        )
+        with rasterio.open(out_raster, "w", **profile) as dst:
+            dst.write(array, 1)
 
     def scipy_interpolation(
         self,
@@ -163,7 +175,14 @@ class GenerateRandomPointsAndInterpolate:
         values = points3d[column].values
 
         grid_x, grid_y = np.meshgrid(x_coords, y_coords)
-        grid_data = griddata(points, values, (grid_x, grid_y), method=method, fill_value=fill_value, rescale=rescale)
+        grid_data = griddata(
+            points,
+            values,
+            (grid_x, grid_y),
+            method=method,
+            fill_value=fill_value,
+            rescale=rescale,
+        )
 
         transform = self.generate_affine_transform(x_coords, y_coords, raster_resolution)
         array = self.create_dask_chunks(grid_data)
@@ -189,7 +208,12 @@ class GenerateRandomPointsAndInterpolate:
             return interp_cubic_geom
 
     def matplotlib_interpolation(
-        self, points, out_raster, column="randon_num", raster_resolution=2, method="linear_tri_interpolator"
+        self,
+        points,
+        out_raster,
+        column="randon_num",
+        raster_resolution=2,
+        method="linear_tri_interpolator",
     ):
         """Matplotlib interpolation method
 
@@ -205,7 +229,13 @@ class GenerateRandomPointsAndInterpolate:
 
         points3d = gpd.read_file(points)
         # Required elements for the triangular interpolation
-        x_coords, y_coords, z_coords, total_points_array, points3d[column] = self.generate_point_grid(points)
+        (
+            x_coords,
+            y_coords,
+            z_coords,
+            total_points_array,
+            points3d[column],
+        ) = self.generate_point_grid(points)
         # triangulation method
         triang = Triangulation(total_points_array[:, 0], total_points_array[:, 1])
         # linear triangule interpolator funtion
@@ -272,7 +302,12 @@ class GenerateRandomPointsAndInterpolate:
             "linear, cubic, nearest for scipy",
         )
         my_parser.add_argument(
-            "--output_raster", "-o", required=True, metavar="output_raster", type=str, help="path to output raster"
+            "--output_raster",
+            "-o",
+            required=True,
+            metavar="output_raster",
+            type=str,
+            help="path to output raster",
         )
         my_parser.add_argument(
             "--download_osm",
@@ -291,4 +326,11 @@ class GenerateRandomPointsAndInterpolate:
         interp_method = args.interp_method
         output_raster = args.output_raster
         download_osm = args.download_osm
-        return interp_library, polygon_path, points_path, interp_method, output_raster, download_osm
+        return (
+            interp_library,
+            polygon_path,
+            points_path,
+            interp_method,
+            output_raster,
+            download_osm,
+        )
