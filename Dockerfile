@@ -13,11 +13,9 @@ RUN pip install GDAL==3.6.2
 # Copy only necessary files
 COPY requirements.txt .
 COPY requirements-dev.txt .
-COPY bootstrap.sh /bootstrap.sh
 # Set executable permissions, install Python dependencies
-RUN chmod +x /bootstrap.sh && \
-    pip install -r requirements-dev.txt && \
+RUN pip install -r requirements-dev.txt && \
     pip install -r requirements.txt
 
-# Set the entrypoint
-ENTRYPOINT ["/bootstrap.sh"]
+
+CMD ["python"]

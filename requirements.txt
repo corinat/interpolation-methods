@@ -1,5 +1,6 @@
 affine
 dask==0.17.5
+dask-rasterio==0.2.1
 Fiona
 geopandas
 numpy

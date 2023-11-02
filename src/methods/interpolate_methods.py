@@ -3,7 +3,6 @@ from __future__ import annotations
 import argparse
 import logging
 
-import dask.array as da
 import geopandas as gpd
 import numpy as np
 import rasterio
@@ -90,19 +89,6 @@ class GenerateRandomPointsAndInterpolate:
 
         return x_coords, y_coords, z_coords, total_points_array, points3d[column]
 
-    def create_dask_chunks(self, z_coords, chunk=100):
-        """Using dask to generate the raster
-
-        Args:
-            z_coords: Z values of the array
-            chunk (int, optional): Number of chunks to create. Defaults to 10.
-
-        Returns:
-            Dask array
-        """
-        logging.info(f"Creating dask {chunk} chunks")
-        return da.from_array(z_coords, chunks=(chunk, chunk))
-
     def generate_affine_transform(self, x_coords, y_coords, raster_resolution):
         """Generates affine transformation matrix
 
@@ -171,7 +157,7 @@ class GenerateRandomPointsAndInterpolate:
         points3d = gpd.read_file(points)
         x_coords, y_coords, z_coords, _, points3d[column] = self.generate_point_grid(points)
 
-        points = [(x, y) for x, y in zip(points3d["geometry"].x, points3d["geometry"].y)]
+        points = list(zip(points3d["geometry"].x, points3d["geometry"].y))
         values = points3d[column].values
 
         grid_x, grid_y = np.meshgrid(x_coords, y_coords)
@@ -185,8 +171,7 @@ class GenerateRandomPointsAndInterpolate:
         )
 
         transform = self.generate_affine_transform(x_coords, y_coords, raster_resolution)
-        array = self.create_dask_chunks(grid_data)
-        self.write_rast(array, z_coords, transform, out_raster)
+        self.write_rast(grid_data, z_coords, transform, out_raster)
 
     def choose_interp_method(self, method, linear_tri_interpolator, interp_cubic_min_e, interp_cubic_geom):
         """Switching between matplotlib interpolation methods
@@ -250,14 +235,10 @@ class GenerateRandomPointsAndInterpolate:
             for index_y, y in np.ndenumerate(y_coords):
                 temp_z = method(x, y)
                 # filtering masked values
-                if temp_z == temp_z:
-                    z_coords[index_y, index_x] = temp_z
-                else:
-                    z_coords[index_y, index_x] = np.nan
-
+                z_coords[index_y, index_x] = temp_z if temp_z == temp_z else np.nan
         transform = self.generate_affine_transform(x_coords, y_coords, raster_resolution)
-        array = self.create_dask_chunks(z_coords)
-        self.write_rast(array, z_coords, transform, out_raster)
+        # array = self.create_dask_chunks(z_coords)
+        self.write_rast(z_coords, z_coords, transform, out_raster)
 
     def generate_argparse(self):
         """Generate argparse arguments

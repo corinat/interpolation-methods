@@ -39,8 +39,6 @@ services:
       - postgres_db
     stdin_open: true
     tty: true
-    env_file:
-      - .env_dev
     environment:
       HISTFILE: /python/.bash_history
       DB_HOST: postgres_db
