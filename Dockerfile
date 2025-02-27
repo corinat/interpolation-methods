@@ -6,7 +6,11 @@ RUN pip install --upgrade pip
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
     gdal-bin \
-    libgdal-dev
+    libgdal-dev \
+    libgeos-dev \
+    g++ \
+    python3-dev
+
 RUN pip install GDAL==3.6.2
 
 

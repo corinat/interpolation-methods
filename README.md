@@ -1,35 +1,33 @@
-# Interpolation methods
+# This Python library performs point interpolation within a given polygon. By default, it uses world country boundaries from OpenStreetMap (OSM), but other boundaries can be used if needed. The point layer is automatically generated to fit within the selected boundaries, with the number of points specified via the command line.
 
-A valid GDAL/OGR installation is required, this can be achieved using your package manager of choice (e.g. apt, conda). Once this is installed, set up a new clean virtual environment and install the requirements:
 
-```shell
-# install gdal, e.g.
-# apt install libgdal-dev
-# conda install gdal -c conda-forge
+## Environment
+The project runs in a Docker container, with commands specified in the Makefile.
 
-# create new virtualenv and install reqs
-mkvirtualenv --python=/usr/bin/python3.8 venv3.11
-pip install -r requirements-dev.txt
-pip install -r requirements.txt
-pip install -e .
-pre-commit install
+Code is linted using `flake8` with `--max-line-length=120`.  
+Code formatting is validated using `Black`.  
+`pre-commit` is used to run these checks locally before files are pushed to Git.  
+The GitHub Actions pipeline also runs these checks.  
 
-Or use docker. The comands are listed in the makefile file
+
+## Examples of how to run the script
+Two interpolation Python libraries have been used: `scipy.interpolate` and `matplotlib.tri`.  
+
+### If the OSM file with polygons is already downloaded.  
+```bash
+python run_interpolation_methods.py -l interpolation_library -p path_to_osm_polygons -t path_to_points -m method_type -o path_to_output_raster
 ```
-- Code is linted using [flake8](https://flake8.pycqa.org/en/latest/) with `--max-line-length=120`
-- Code formatting is validated using [Black](https://github.com/psf/black)
-- [pre-commit](https://pre-commit.com/) is used to run these checks locally before files are pushed to git
-- The [Github Actions pipeline](.github/workflows/pipeline.yml) also runs these checks
 
-Two interpolation python libraries have been used, `scipy.interpolate` and `matplotlib.tri`
+### If the OSM file with polygons is not already downloaded:
 
-Interpolation methods are run as: `python run_interpolation_methods.py -l interpolation_library -p path_to_osm_polygons -t path_to_points -m method_type -t path_to_output_raster` if the osm file with polygons is already downloaded
-
-Or run: `./run_interpolation_methods.sh interpolation_library path_to_osm_polygons path_to_points method_type path_to_output_raster number_of_random_points raster_resolution path_to_osm_file` if the osm file still needs to be downloaded.
-
-`method_type` can be:
-`linear, cubic or nearest` for `scipy`
+```bash
+run as: ./run_interpolation_methods.sh scipy /usr/src/app/multipolygons.shp /usr/src/app/random_points.gpkg linear /usr/src/app/linear_scipy.tif /usr/src/app/
+```
 or
-`linear_tri_interpolator, cubic_geom_min_e or interp_cubic_geom` for `mpl`.
+```bash
+./run_interpolation_methods.sh mpl /usr/src/app/multipolygons.shp /usr/src/app/random_points.gpkg linear_tri_interpolator /usr/src/app/linear_mpl.tif /usr/src/app/
+```
 
-`interpolation_library` can be: `scipy` or `mpl`
+To view the required parameters, run: python run_interpolation_methods.py --help
+`method_type` can be: `linear`, `cubic`, or `nearest` for `scipy`, or `linear_tri_interpolator`, `cubic_geom_min_e`, or `interp_cubic_geom` for `mpl`.  
+`interpolation_library` can be: `scipy` or `mpl`.
