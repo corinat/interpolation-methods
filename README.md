@@ -28,6 +28,6 @@ or
 ./run_interpolation_methods.sh mpl /usr/src/app/multipolygons.shp /usr/src/app/random_points.gpkg linear_tri_interpolator /usr/src/app/linear_mpl.tif /usr/src/app/
 ```
 
-To view the required parameters, run: ython run_interpolation_methods.py --help
+To view the required parameters, run: python run_interpolation_methods.py --help
 `method_type` can be: `linear`, `cubic`, or `nearest` for `scipy`, or `linear_tri_interpolator`, `cubic_geom_min_e`, or `interp_cubic_geom` for `mpl`.  
 `interpolation_library` can be: `scipy` or `mpl`.
