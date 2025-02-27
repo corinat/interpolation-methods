@@ -22,7 +22,9 @@ python run_interpolation_methods.py -l interpolation_library -p path_to_osm_poly
 
 ```bash
 run as: ./run_interpolation_methods.sh scipy /usr/src/app/multipolygons.shp /usr/src/app/random_points.gpkg linear /usr/src/app/linear_scipy.tif /usr/src/app/
+```
 or
+```bash
 ./run_interpolation_methods.sh mpl /usr/src/app/multipolygons.shp /usr/src/app/random_points.gpkg linear_tri_interpolator /usr/src/app/linear_mpl.tif /usr/src/app/
 ```
 
