@@ -1,4 +1,4 @@
-# This Python library performs point interpolation within a given polygon. By default, it uses world country boundaries from OpenStreetMap (OSM), but other boundaries can be used if needed. The point layer is automatically generated to fit within the selected boundaries, with the number of points specified via the command line.
+# This Python library performs point interpolation within a given polygon. By default, it uses world country boundaries from OpenStreetMap (OSM), but other boundaries can be used if needed. The point layer is automatically generated to fit within the selected boundaries, with the number of points passed in the code as a default value ifa number is not specified via the command line.
 
 
 ## Environment
