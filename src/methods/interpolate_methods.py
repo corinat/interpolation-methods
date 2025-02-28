@@ -1,4 +1,4 @@
-from __future__ import annotations
+# from __future__ import annotations
 
 import argparse
 import logging
@@ -30,7 +30,7 @@ class GenerateRandomPointsAndInterpolate:
         y = np.random.uniform(y_min, y_max, points_number)
         gdf_points = gpd.GeoSeries(gpd.points_from_xy(x, y))
         gdf_points.crs = f"epsg:{epsg}"
-        # Retrieve the points that intersect the polygon
+        # retrieve the points that intersect the polygon
         random_points = gpd.GeoDataFrame(geometry=gdf_points.geometry)
         spatial_join = gpd.sjoin(random_points, country_polygons, predicate="within", how="left")
         spatial_join.dropna(subset=["index_right"], how="all", inplace=True)
@@ -213,7 +213,6 @@ class GenerateRandomPointsAndInterpolate:
         logging.info("Running matplotlib interpolation method")
 
         points3d = gpd.read_file(points)
-        # Required elements for the triangular interpolation
         (
             x_coords,
             y_coords,
@@ -237,7 +236,6 @@ class GenerateRandomPointsAndInterpolate:
                 # filtering masked values
                 z_coords[index_y, index_x] = temp_z if temp_z == temp_z else np.nan
         transform = self.generate_affine_transform(x_coords, y_coords, raster_resolution)
-        # array = self.create_dask_chunks(z_coords)
         self.write_rast(z_coords, z_coords, transform, out_raster)
 
     def generate_argparse(self):
