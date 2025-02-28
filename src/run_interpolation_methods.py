@@ -1,5 +1,3 @@
-from __future__ import annotations
-
 import logging
 import sys
 from datetime import datetime
@@ -28,12 +26,6 @@ def run_interpolation(
 
 
 if __name__ == "__main__":
-    # run as :python run_interpolation_methods.py -l scipy -p /usr/src/app/data/multipolygons.shp
-    # -t /usr/src/app/data/random_points.gpkg -m linear  -o /usr/src/app/data/linear.tif
-    # or
-    # # run as :python run_interpolation_methods.py-l  mpl -p /usr/src/app/data/multipolygons.shp
-    # -t/usr/src/app/data/random_points.gpkg -m linear_tri_interpolator -o /usr/src/app/data/linear_mpl.tif
-
     (
         interp_library,
         polygon_path,
