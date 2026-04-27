@@ -1,0 +1,16 @@
+.git
+.github
+.gitignore
+.pre-commit-config.yaml
+__pycache__
+*.pyc
+*.pyo
+*.egg-info
+.pytest_cache
+.mypy_cache
+.coverage
+htmlcov
+*.tif
+*.shp
+*.gpkg
+*.osm
