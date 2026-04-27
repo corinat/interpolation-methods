@@ -1,8 +1,9 @@
 #!/bin/bash
 
-# run as: ./run_interpolation_methods.sh scipy /usr/src/app/data/multipolygons.shp /usr/src/app/data/random_points.gpkg linear /usr/src/app/linear_scipy.tif /usr/src/app/data/
+# run as: ./src/run_interpolation_methods.sh scipy /usr/src/app/data/multipolygons.shp /usr/src/app/data/random_points.gpkg linear /usr/src/app/linear_scipy.tif /usr/src/app/data/ [points_number]
 # or
-# ./run_interpolation_methods.sh mpl /usr/src/app/data/multipolygons.shp /usr/src/app/data/random_points.gpkg linear_tri_interpolator /usr/src/app/data/linear_mpl.tif /usr/src/app/data/
+# ./src/run_interpolation_methods.sh mpl /usr/src/app/data/multipolygons.shp /usr/src/app/data/random_points.gpkg linear_tri_interpolator /usr/src/app/data/linear_mpl.tif /usr/src/app/data/ [points_number]
+# points_number is optional, defaults to 200 if not provided
 
 STARTTIME=$(date +%s)
 
@@ -16,6 +17,7 @@ points_path=$3 # path to points file
 interp_method=$4 # interpolation method. Expected linear_tri_interpolator, cubic_geom_min_e or interp_cubic_geom for mpl or linear, cubic, nearest for scipy
 output_raster=$5 # path to output raster
 download_osm=$6 # path to where the osm file will be saved
+points_number=${7:-200} # number of random points to generate (optional, default: 200)
 
 echo ""
 echo "-------Downloading OSM - countries boundaries to ${download_osm}countries-border.osm----------"
@@ -39,7 +41,7 @@ echo ""
 echo "------Running interpolation script-------"
 echo ""
 
-python /usr/src/app/src/run_interpolation_methods.py -l $interp_library -p $polygon_path -t $points_path -m $interp_method -o $output_raster
+python /usr/src/app/src/run_interpolation_methods.py -l $interp_library -p $polygon_path -t $points_path -m $interp_method -o $output_raster -n $points_number
 
 ENDTIME=$(date +%s)
 echo "Duration to complete: $((($ENDTIME - $STARTTIME)/60))m and $(($ENDTIME - $STARTTIME))s"
