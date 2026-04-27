@@ -1,25 +1,19 @@
-FROM python:3.11
+FROM python:3.11-slim
 WORKDIR /usr/src/app
-RUN apt update
-RUN pip install --upgrade pip
-
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
     gdal-bin \
     libgdal-dev \
     libgeos-dev \
     g++ \
-    python3-dev
+    python3-dev \
+    curl \
+    && rm -rf /var/lib/apt/lists/*
 
-RUN pip install GDAL==3.6.2
+RUN pip install --upgrade pip GDAL==3.6.2
 
-
-# Copy only necessary files
-COPY requirements.txt .
-COPY requirements-dev.txt .
-# Set executable permissions, install Python dependencies
-RUN pip install -r requirements-dev.txt && \
-    pip install -r requirements.txt
-
+# Copy only dependency files first to maximise layer caching
+COPY requirements.txt requirements-dev.txt ./
+RUN pip install -r requirements.txt -r requirements-dev.txt
 
 CMD ["python"]
